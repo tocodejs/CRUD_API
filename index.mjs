@@ -58,6 +58,10 @@ const addUser = (request, response) => {
           );
         }
       } catch (e) {
+        response.writeHead(500, {
+          "Content-Type": "application/json",
+          "X-Powered-By": "bacon",
+        });
         response.end(JSON.stringify({ message: "Invadid data structure" }));
       }
     });
@@ -161,6 +165,10 @@ const updateUser = (request, response) => {
             );
           }
         } catch (e) {
+          response.writeHead(500, {
+            "Content-Type": "application/json",
+            "X-Powered-By": "bacon",
+          });
           response.end(JSON.stringify({ message: "Invadid data structure" }));
         }
       });
@@ -207,6 +215,18 @@ const deleteUser = (request, response) => {
   }
 };
 
+const noService = (request, response) => {
+  response.writeHead(404, {
+    "Content-Type": "application/json",
+    "X-Powered-By": "bacon",
+  });
+  response.end(
+    JSON.stringify({
+      message: `No service to handle the request`,
+    })
+  );
+};
+
 server
   .on("request", (request, response) => {
     if (request.url === "/api/users") {
@@ -214,6 +234,8 @@ server
         getAllUsers(response);
       } else if (request.method === "POST") {
         addUser(request, response);
+      } else {
+        noService(request, response);
       }
     } else if (request.url.indexOf("/api/users") === 0) {
       if (request.method === "GET") {
@@ -222,7 +244,11 @@ server
         deleteUser(request, response);
       } else if (request.method === "PUT") {
         updateUser(request, response);
+      } else {
+        noService(request, response);
       }
+    } else {
+      noService(request, response);
     }
   })
   .listen(4000);
