@@ -98,6 +98,46 @@ const getUserById = (request, response) => {
   }
 };
 
+const deleteUser = (request, response) => {
+  const aRequestParams = request.url.split("/");
+  const RequestedUserId = aRequestParams[aRequestParams.length - 1];
+  let userIndexToDelete;
+  users.forEach((oUser, index) => {
+    if (oUser.id == RequestedUserId) {
+      userIndexToDelete = index;
+    }
+  });
+
+  if (isNaN(RequestedUserId)) {
+    response.writeHead(400, {
+      "Content-Type": "application/json",
+      "X-Powered-By": "bacon",
+    });
+    response.end(
+      JSON.stringify({
+        message: `User id should be a number`,
+      })
+    );
+  } else if (userIndexToDelete !== undefined) {
+    users.splice(userIndexToDelete, 1);
+    response.writeHead(204, {
+      "Content-Type": "application/json",
+      "X-Powered-By": "bacon",
+    });
+    response.end();
+  } else {
+    response.writeHead(404, {
+      "Content-Type": "application/json",
+      "X-Powered-By": "bacon",
+    });
+    response.end(
+      JSON.stringify({
+        message: `User with id ${RequestedUserId} is not found`,
+      })
+    );
+  }
+};
+
 server
   .on("request", (request, response) => {
     if (request.url === "/api/users") {
@@ -109,6 +149,9 @@ server
     } else if (request.url.indexOf("/api/users") === 0) {
       if (request.method === "GET") {
         getUserById(request, response);
+      } else if (request.method === "DELETE") {
+        deleteUser(request, response);
+      } else if (request.method === "GET") {
       }
     }
   })
