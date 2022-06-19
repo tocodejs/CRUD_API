@@ -1,0 +1,27 @@
+{
+  "name": "crud_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:prod": "node index.mjs",
+    "start:dev": "nodemon index.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tocodejs/CRUD_API.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tocodejs/CRUD_API/issues"
+  },
+  "homepage": "https://github.com/tocodejs/CRUD_API#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.1"
+  }
+}
