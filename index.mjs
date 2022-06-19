@@ -98,6 +98,75 @@ const getUserById = (request, response) => {
   }
 };
 
+const updateUser = (request, response) => {
+  let body = [];
+  const aRequestParams = request.url.split("/");
+  const RequestedUserId = aRequestParams[aRequestParams.length - 1];
+  if (isNaN(RequestedUserId)) {
+    response.writeHead(400, {
+      "Content-Type": "application/json",
+      "X-Powered-By": "bacon",
+    });
+    response.end(
+      JSON.stringify({
+        message: `User id should be a number`,
+      })
+    );
+  } else {
+    request
+      .on("data", (chunk) => {
+        body.push(chunk);
+      })
+      .on("end", () => {
+        body = Buffer.concat(body).toString();
+        try {
+          let user = JSON.parse(body);
+          let oUserValidationResult = validateUser(user);
+          if (oUserValidationResult.isValid) {
+            let bIsUpdated = false;
+
+            users.forEach((oUser) => {
+              if (oUser.id == RequestedUserId) {
+                oUser.name = user.name;
+                oUser.age = user.age;
+                oUser.hobbies = user.hobbies;
+                bIsUpdated = true;
+              }
+            });
+            if (bIsUpdated) {
+              response.writeHead(200, {
+                "Content-Type": "application/json",
+                "X-Powered-By": "bacon",
+              });
+              response.end(JSON.stringify(user));
+            } else {
+              response.writeHead(404, {
+                "Content-Type": "application/json",
+                "X-Powered-By": "bacon",
+              });
+              response.end(
+                JSON.stringify({
+                  message: `User with id ${RequestedUserId} is not found`,
+                })
+              );
+            }
+          } else {
+            response.writeHead(400, {
+              "Content-Type": "application/json",
+              "X-Powered-By": "bacon",
+            });
+
+            response.end(
+              JSON.stringify({ message: oUserValidationResult.message })
+            );
+          }
+        } catch (e) {
+          response.end(JSON.stringify({ message: "Invadid data structure" }));
+        }
+      });
+  }
+};
+
 const deleteUser = (request, response) => {
   const aRequestParams = request.url.split("/");
   const RequestedUserId = aRequestParams[aRequestParams.length - 1];
@@ -151,7 +220,8 @@ server
         getUserById(request, response);
       } else if (request.method === "DELETE") {
         deleteUser(request, response);
-      } else if (request.method === "GET") {
+      } else if (request.method === "PUT") {
+        updateUser(request, response);
       }
     }
   })
