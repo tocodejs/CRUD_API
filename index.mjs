@@ -69,21 +69,30 @@ const getUserById = (request, response) => {
   let resutUser = users.filter((oUser) => {
     return oUser.id == RequestedUserId;
   });
-  if (resutUser.length) {
+  if (isNaN(RequestedUserId)) {
+    response.writeHead(400, {
+      "Content-Type": "application/json",
+      "X-Powered-By": "bacon",
+    });
+    response.end(
+      JSON.stringify({
+        message: `User id should be a number`,
+      })
+    );
+  } else if (resutUser.length) {
     response.writeHead(200, {
       "Content-Type": "application/json",
       "X-Powered-By": "bacon",
     });
     response.end(JSON.stringify(resutUser));
   } else {
-    response.writeHead(400, {
+    response.writeHead(404, {
       "Content-Type": "application/json",
       "X-Powered-By": "bacon",
     });
-
     response.end(
       JSON.stringify({
-        message: `User with id ${RequestedUserId} is not fourn`,
+        message: `User with id ${RequestedUserId} is not found`,
       })
     );
   }
