@@ -20,5 +20,8 @@
   "homepage": "https://github.com/tocodejs/CRUD_API#readme",
   "devDependencies": {
     "nodemon": "^2.0.16"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.1"
   }
 }
