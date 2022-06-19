@@ -48,7 +48,7 @@ const addUser = (request, response) => {
           });
           response.end(JSON.stringify(user));
         } else {
-          response.writeHead(400, oUserValidationResult.message, {
+          response.writeHead(400, {
             "Content-Type": "application/json",
             "X-Powered-By": "bacon",
           });
@@ -63,6 +63,32 @@ const addUser = (request, response) => {
     });
 };
 
+const getUserById = (request, response) => {
+  const aRequestParams = request.url.split("/");
+  const RequestedUserId = aRequestParams[aRequestParams.length - 1];
+  let resutUser = users.filter((oUser) => {
+    return oUser.id == RequestedUserId;
+  });
+  if (resutUser.length) {
+    response.writeHead(200, {
+      "Content-Type": "application/json",
+      "X-Powered-By": "bacon",
+    });
+    response.end(JSON.stringify(resutUser));
+  } else {
+    response.writeHead(400, {
+      "Content-Type": "application/json",
+      "X-Powered-By": "bacon",
+    });
+
+    response.end(
+      JSON.stringify({
+        message: `User with id ${RequestedUserId} is not fourn`,
+      })
+    );
+  }
+};
+
 server
   .on("request", (request, response) => {
     if (request.url === "/api/users") {
@@ -70,6 +96,10 @@ server
         getAllUsers(response);
       } else if (request.method === "POST") {
         addUser(request, response);
+      }
+    } else if (request.url.indexOf("/api/users") === 0) {
+      if (request.method === "GET") {
+        getUserById(request, response);
       }
     }
   })
